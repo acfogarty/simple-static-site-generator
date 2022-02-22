@@ -1,0 +1,16 @@
+{
+  "blogpost_dogs": {
+    "blogtitle": "A Post About Dogs",
+    "blogsubtitle": "This is all about dogs",
+    "blogpostdate": "1 May 2022"
+  },
+  "blogpost_cats": {
+    "blogtitle": "A Post About Cats",
+    "blogsubtitle": "This is all about cats",
+    "blogpostdate": "12 June 2022"
+  },
+  "blog_sidebar": { },
+  "blog_home": { 
+      "title": "The page title"
+  }
+}

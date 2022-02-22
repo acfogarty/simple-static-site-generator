@@ -1,0 +1,39 @@
+<root>
+  <components>
+    <component>
+      <name>toppost_dogs</name>
+      <varsource>blogpost_dogs</varsource>
+      <template>toppost_template.html</template>
+      <description>Entry for the Top Posts sidebar</description>
+    </component>
+    <component>
+      <name>toppost_cats</name>
+      <varsource>blogpost_cats</varsource>
+      <template>toppost_template.html</template>
+      <description>Entry for the Top Posts sidebar</description>
+    </component>
+    <component>
+      <name>blog_sidebar</name>
+      <template>sidebar_template.html</template>
+      <varsource>blog_sidebar</varsource>
+      <description>Top Posts sidebar</description>
+      <include>
+        <locationtag>topposts</locationtag>
+        <componentname>toppost_dogs</componentname>
+        <componentname>toppost_cats</componentname>
+      </include>
+    </component>
+  </components>
+  <pages>
+    <page>
+      <name>bloghome</name>
+      <filename>blog.html</filename>
+      <template>base_template.html</template>
+      <varsource>blog_home</varsource>
+      <include>
+        <locationtag>blog_sidebar</locationtag>
+        <componentname>blog_sidebar</componentname>
+      </include>
+    </page>
+  </pages>
+</root>
