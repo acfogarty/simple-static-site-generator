@@ -1,4 +1,3 @@
-from fileinput import filename
 import json
 import re
 
@@ -39,46 +38,106 @@ def insert_variables(html: str, components_data: dict):
     return html
 
 
-def include_components(html: str, components_html: dict, include_elem: lxml.etree.Element):
+def include_components(html: str,
+                       components_html: dict,
+                       include_elem: lxml.etree.Element):
     """
-    Replace all instances of {% include XXXX} with the html of the
+    For one include tag with locationtag XXX, replace all
+    instances of {% include XXXX} with the html of the
     components listed in the include tag.
 
     e.g. for
     <include>
       <locationtag>topposts</locationtag>
-      <componentname>toppost_dogs</componentname>
-      <componentname>toppost_cats</componentname>
+      <sourcecomponent>toppost_dogs</sourcecomponent>
+      <sourcecomponent>toppost_cats</sourcecomponent>
     </include>
 
-    the concatenation of the html of toppost_cats and toppost_dogs is inserted at {% include topposts}
+    the concatenation of the html of toppost_cats and toppost_dogs
+    is inserted at {% include topposts}
+
+    for
+    <include>
+      <locationtag>topposts</locationtag>
+      <sourcefile>dogs.html</sourcefile>
+    </include>
+
+    the contents of the file dogs.html is inserted at {% include topposts}
 
     :param html: html of the component being constructed
     :param components_html: html of all previously constructed components
+    :param include_elem: the xml within the <include> tags
     """
 
     locationtag = get_text_from_xml_element(include_elem, 'locationtag')
 
+    if include_elem.find('sourcecomponent') is not None:
+        html_to_insert = get_html_from_sourcecomponents(include_elem, components_html)
+    elif include_elem.find('sourcefile') is not None:
+        html_to_insert = get_html_from_sourcefile(include_elem)
+    else:
+        message = f'Cannot find sourcefile or sourcecomponent in {lxml.etree.tostring(include_elem)}'
+        raise KeyError(message)
+
+    # insert new html in the component html
+    pattern = f'({{% include {locationtag}}})'
+    matches = re.findall(pattern, html)
+    for locationtag_match in matches:
+        html = html.replace(locationtag_match, html_to_insert)
+
+    return html
+
+
+def get_html_from_sourcefile(include_elem):
+    '''
+    :param include_elem: xml element of format:
+      <include>
+        <sourcefile>nameA</sourcefile>
+        <sourcefile>nameB</sourcefile>
+      </include>
+    '''
+
+    # get all files to include
+    filenames = get_text_from_xml_element(include_elem,
+                                          'sourcefile',
+                                           findall=True)
+
+    html_to_insert = ''
+    for filename in filenames:
+        with open(filename, 'r') as f:
+            html = f.read()
+            html_to_insert += html
+
+    return html_to_insert
+
+
+def get_html_from_sourcecomponents(include_elem, components_html):
+    '''
+    :param include_elem: xml element of format:
+      <include>
+        <sourcecomponent>nameA</sourcecomponent>
+        <sourcecomponent>nameB</sourcecomponent>
+      </include>
+    :param components_html: for example
+      {'nameA': '<p>stuff</p>', 'nameB': '<h2>heading</h2>'
+    '''
+
     # get all sub-components to include
-    subcomponentnames = get_text_from_xml_element(include_elem, 'componentname', findall=True)
+    subcomponentnames = get_text_from_xml_element(include_elem,
+                                                  'sourcecomponent',
+                                                  findall=True)
 
     # get html of all the sub-components
-    concatenatedhtml = ''
+    html_to_insert = ''
     for subcomponentname in subcomponentnames:
 
         try:
-            concatenatedhtml += components_html[subcomponentname]
+            html_to_insert += components_html[subcomponentname]
         except KeyError:
             message = f'No component named {subcomponentname}'
             raise KeyError(message)
 
-    # insert sub-components html in the component html
-    pattern = f'({{% include {locationtag}}})'
-    matches = re.findall(pattern, html)
-    for locationtag_match in matches:
-        html = html.replace(locationtag_match, concatenatedhtml)
-
-    return html
+    return html_to_insert
 
 
 def get_text_from_xml_element(element: lxml.etree._Element,
