@@ -25,12 +25,16 @@
       <description>Top Posts sidebar</description>
       <include>
         <locationtag>topposts</locationtag>
-        <componentname>toppost_dogs</componentname>
-        <componentname>toppost_cats</componentname>
+        <sourcecomponent>toppost_dogs</sourcecomponent>
+        <sourcecomponent>toppost_cats</sourcecomponent>
       </include>
       <include>
-        <locationtag>asecondcomponent</locationtag>
-        <componentname>testcomponent</componentname>
+        <locationtag>secondtag</locationtag>
+        <sourcecomponent>testcomponent</sourcecomponent>
+      </include>
+      <include>
+        <locationtag>thirdtag</locationtag>
+        <sourcefile>test_source_file.html</sourcefile>
       </include>
     </component>
   </components>
@@ -42,7 +46,7 @@
       <varsource>blog_home</varsource>
       <include>
         <locationtag>blog_sidebar</locationtag>
-        <componentname>blog_sidebar</componentname>
+        <sourcecomponent>blog_sidebar</sourcecomponent>
       </include>
     </page>
   </pages>
