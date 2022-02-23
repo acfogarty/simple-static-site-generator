@@ -30,10 +30,10 @@ def insert_variables(html: str, components_data: dict):
     for m in matches:
         try:
             value = components_data[m]
+            html = html.replace(f'{{{{{m}}}}}', value)
         except KeyError:
-            message = f'Could not find variable {m} in components_data'
-            raise KeyError(message)
-        html = html.replace(f'{{{{{m}}}}}', value)
+            message = f'Warning! Could not find variable {m} in components_data. Will try again in parent component.'
+            print(message)
 
     return html
 
@@ -193,16 +193,19 @@ def build_component(component: lxml.etree.Element,
     try:
         component_data = variable_data[varsource]
     except KeyError:
-        message = f'Could not find key {varsource} in variables file'
+        message = f'Could not find key {varsource} in variables file.'
         raise KeyError(message)
-
-    # insert variables in {{}}
-    html = insert_variables(html, component_data)
 
     # for all <include> blocks in structure file, include components in {% include name}
     include_elems = component.findall('include')
     for include_elem in include_elems:
         html = include_components(html, components_html, include_elem)
+
+    # insert variables in {{}}
+    # Note: we insert variables after including components, so that
+    # variables can also be inserted in the included components
+    # if not already done
+    html = insert_variables(html, component_data)
 
     return name, html
 
@@ -235,8 +238,23 @@ def build_page(component: lxml.etree.Element,
 
     name, html = build_component(component, variable_data, components_html)
 
+    validate_html(html)
+
     with open(filename, 'w') as f:
+        print(f'Writing to {filename}')
         f.write(html)
+
+
+def validate_html(html):
+    """
+    Make sure there are no remaining unreplaced {} tags
+    """
+    pattern = '({\w+})'
+    matches = re.findall(pattern, html)
+
+    for m in matches:
+        print(f'Warning! "{m}" not replaced in html')
+
 
 if __name__ == '__main__':
     main()
