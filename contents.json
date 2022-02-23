@@ -12,5 +12,6 @@
   "blog_sidebar": { },
   "blog_home": { 
       "title": "The page title"
-  }
+  },
+  "none": {}
 }

@@ -7,7 +7,7 @@ import lxml.etree
 
 def main():
 
-    structure_file = "test.xml" 
+    structure_file = "structure.xml"
     variables_file = "contents.json"
     
     with open(variables_file) as f:
@@ -16,8 +16,6 @@ def main():
     tree = lxml.etree.parse(structure_file)
 
     components_html = build_components(tree, variable_data)
-
-    print(components_html)
 
     build_pages(tree, variable_data, components_html)
 
@@ -43,7 +41,7 @@ def insert_variables(html: str, components_data: dict):
 
 def include_components(html: str, components_html: dict, include_elem: lxml.etree.Element):
     """
-    For all instances of {% include XXXX} with the html of the
+    Replace all instances of {% include XXXX} with the html of the
     components listed in the include tag.
 
     e.g. for
@@ -131,9 +129,9 @@ def build_component(component: lxml.etree.Element,
     # insert variables in {{}}
     html = insert_variables(html, component_data)
 
-    # include components in {% include name}
-    include_elem = component.find('include')
-    if include_elem is not None:
+    # for all <include> blocks in structure file, include components in {% include name}
+    include_elems = component.findall('include')
+    for include_elem in include_elems:
         html = include_components(html, components_html, include_elem)
 
     return name, html
