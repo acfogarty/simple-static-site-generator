@@ -81,11 +81,19 @@ def include_components(html: str, components_html: dict, include_elem: lxml.etre
     return html
 
 
-def get_text_from_xml_element(element: lxml.etree._Element, tag: str, findall=False):
+def get_text_from_xml_element(element: lxml.etree._Element,
+                              tag: str,
+                              findall=False,
+                              optional=False):
     """
     e.g. element = <outer><inner>word</inner></outer>
          tag = 'inner'
          Returns 'word'
+
+    If findall==True, return list of all tags found.
+    If findall==False, only return the first tag.
+
+    :rtype: str or List[str]
     """
 
     if findall:
@@ -94,7 +102,10 @@ def get_text_from_xml_element(element: lxml.etree._Element, tag: str, findall=Fa
         obj = element.find(tag)
 
     if obj is None:
-        raise KeyError(f"Tag '{tag}' not found in {lxml.etree.tostring(element)}")
+        if optional:
+            return 'default'
+        else:
+            raise KeyError(f"Tag '{tag}' not found in {lxml.etree.tostring(element)}")
 
     if findall:
         return [o.text for o in obj]
@@ -119,7 +130,7 @@ def build_component(component: lxml.etree.Element,
     with open(template) as f:
         html = f.read()
 
-    varsource = get_text_from_xml_element(component, 'varsource')
+    varsource = get_text_from_xml_element(component, 'varsource', optional=True)
     try:
         component_data = variable_data[varsource]
     except KeyError:
