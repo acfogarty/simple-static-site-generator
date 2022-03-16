@@ -3,24 +3,24 @@
     <component>
       <name>toppost_dogs</name>
       <varsource>blogpost_dogs</varsource>
-      <template>toppost_template.html</template>
+      <template>templates/toppost_template.html</template>
       <description>Entry for the Top Posts sidebar</description>
     </component>
     <component>
       <name>toppost_cats</name>
       <varsource>blogpost_cats</varsource>
-      <template>toppost_template.html</template>
+      <template>templates/toppost_template.html</template>
       <description>Entry for the Top Posts sidebar</description>
     </component>
     <component>
       <name>testcomponent</name>
       <varsource>none</varsource>
-      <template>test_template.html</template>
+      <template>templates/test_template.html</template>
       <description>a simple test component</description>
     </component>
     <component>
       <name>blog_sidebar</name>
-      <template>sidebar_template.html</template>
+      <template>templates/sidebar_template.html</template>
       <varsource>blog_sidebar</varsource>
       <description>Top Posts sidebar</description>
       <include>
@@ -34,7 +34,7 @@
       </include>
       <include>
         <locationtag>thirdtag</locationtag>
-        <sourcefile>test_source_file.html</sourcefile>
+        <sourcefile>templates/test_source_file.html</sourcefile>
       </include>
     </component>
   </components>
@@ -42,7 +42,7 @@
     <page>
       <name>bloghome</name>
       <filename>blog.html</filename>
-      <template>base_template.html</template>
+      <template>templates/base_template.html</template>
       <varsource>blog_home</varsource>
       <include>
         <locationtag>blog_sidebar</locationtag>

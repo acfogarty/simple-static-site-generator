@@ -238,7 +238,7 @@ def build_page(component: lxml.etree.Element,
 
     name, html = build_component(component, variable_data, components_html)
 
-    validate_html(html)
+    html = validate_html(html)
 
     with open(filename, 'w') as f:
         print(f'Writing to {filename}')
@@ -249,11 +249,18 @@ def validate_html(html):
     """
     Make sure there are no remaining unreplaced {} tags
     """
-    pattern = '({\w+})'
-    matches = re.findall(pattern, html)
 
-    for m in matches:
-        print(f'Warning! "{m}" not replaced in html')
+    pattern = '({% .+})'
+    unreplaced_location_tags = re.findall(pattern, html)
+
+    pattern = '({{.+}})'
+    unreplaced_variables = re.findall(pattern, html)
+
+    for m in unreplaced_location_tags + unreplaced_variables:
+        print(f'Warning! "{m}" not replaced in html. Removing this from html.')
+        html = html.replace(m, '')
+
+    return html
 
 
 if __name__ == '__main__':

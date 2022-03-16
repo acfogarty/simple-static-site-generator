@@ -105,3 +105,46 @@ The html string of the `blog_link1` and `blog_link2` components will be inserted
 ```
 
 The contents of the file `example.txt` will be inserted at `{% include content}` in the parent html.
+
+# Variable insertion
+
+Variable values are defined in `contents.json`.
+
+In each component in `structure.xml`, use the `<varsource>` tag to specify which top-level key in `contents.json` to use for the variable values in that component. For example:
+
+```html
+<!-- template.html -->
+<p>This is a paragraph about {{subject}} in the html file.</p>
+```
+
+```xml
+<component>
+  <name>toppost_dogs</name>
+  <varsource>blogpost_dogs</varsource>
+  <template>template.html</template>
+</component>
+<component>
+  <name>toppost_cats</name>
+  <varsource>blogpost_cats</varsource>
+  <template>template.html</template>
+</component>
+```
+
+```json
+{
+  "blogpost_dogs": {
+    "subject": "Husky dogs"
+  },
+  "blogpost_cats": {
+    "subject": "black cats"
+  }
+}
+```
+
+If no `varsource` tag is present in the xml, the `default` key will be used.
+
+# To add a page:
+
+* create html template files for the content of all new components (including variables in `site_structure.json` if necessary)
+* in `structure.xml`, create the component(s)
+* in `structure.xml`, create a page that uses the component(s) (including variables in `site_structure.json` if necessary)
